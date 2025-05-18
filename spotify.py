@@ -9,10 +9,9 @@ load_dotenv()
 class SpotifyPlaylistGenerator:
     def __init__(self):
         # Get credentials from environment
-        self.client_id = os.getenv("9cbae4ea6a5449c3bfa95b28a0e376b0")
-        self.client_secret = os.getenv("190f7e4ad7b14472bf7b756591a08400")
-        self.redirect_uri = os.getenv("http://127.0.0.1:3000")
-        
+        self.client_id = os.getenv("SPOTIPY_CLIENT_ID")        
+        self.client_secret = os.getenv("SPOTIPY_CLIENT_SECRET") 
+        self.redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
         # Validate credentials
         if not all([self.client_id, self.client_secret, self.redirect_uri]):
             raise ValueError("Missing Spotify API credentials in environment variables")
@@ -22,11 +21,22 @@ class SpotifyPlaylistGenerator:
         
         # Set up Spotipy authentication
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            redirect_uri=self.redirect_uri,
-            scope=self.SCOPE
-        ))
+         client_id=os.getenv("SPOTIPY_CLIENT_ID"),
+         client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
+         redirect_uri="http://127.0.0.1:8080",  # Changed to common port 8080
+         scope="user-library-read playlist-modify-private",
+         cache_path=".spotipy_cache",  # Persistent token caching
+         show_dialog=True  # Forces login prompt for debugging
+))
+        # self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+        #     client_id=self.client_id, 
+        #     client_secret=self.client_secret,
+        #     redirect_uri=self.redirect_uri,
+        #     scope=self.SCOPE,
+        #     show_dialog=True,
+            
+
+       # ))
     
     def get_top_tracks(self, limit=20, time_range='medium_term'):
         """
